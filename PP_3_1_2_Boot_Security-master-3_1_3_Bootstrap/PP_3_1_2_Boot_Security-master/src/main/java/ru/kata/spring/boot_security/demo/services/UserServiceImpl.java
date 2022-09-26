@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     public void addUser(User user) {
         Set<Role> role = new LinkedHashSet<>();
         role.add(roleRepository.findAll().get(0));
-        user.setRoles(role);
+        user.setRole(role);
         userRepository.save(user);
     }
 
@@ -39,6 +39,11 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void addRole(Role role) {
         roleRepository.save(role);
+    }
+
+    @Override
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
     }
 
     @Override

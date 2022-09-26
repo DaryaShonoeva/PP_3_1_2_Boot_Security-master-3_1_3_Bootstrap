@@ -1,6 +1,8 @@
 package ru.kata.spring.boot_security.demo.models;
 
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,19 +31,19 @@ public class User implements UserDetails {
     @Transient
     private String passwordConfirm;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id",
-                    referencedColumnName = "id"),// показываем, с помощью какого столбца таблица user_role связана с таблицей user
-            inverseJoinColumns = @JoinColumn(name = "role_id",
-                    referencedColumnName = "id"))                                                         // показываем, с помощью какого столбца таблица user_role связана с таблицей role
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
 
-    private Set<Role> roles;
+    )
+    @Fetch(FetchMode.JOIN)
+    private Set<Role> role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
+        return role.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole()))
                 .collect(Collectors.toList());
     }
@@ -100,11 +102,17 @@ public class User implements UserDetails {
         this.passwordConfirm = passwordConfirm;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public Set<Role> getRole() {
+        return role;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRole(Set<Role> role) {
+        this.role = role;
+    }
+
+    public String getRolesInfo() {
+        return role.stream().map(Role::getRole).map(r -> r.substring(5))
+                .toList().toString().replace("[", "")
+                .replace("]", "");
     }
 }

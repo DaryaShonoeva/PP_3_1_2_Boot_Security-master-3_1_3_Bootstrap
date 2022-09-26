@@ -1,11 +1,14 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.UserService;
+
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/admins")
@@ -19,15 +22,11 @@ public class AdminController {
     }
 
     @GetMapping()
-    public String showAllUsers(Model model) {
+    public String showAllUsers(Principal principal, Model model) {
         model.addAttribute("users", usersServices.listUser());
-        return "users";
-    }
-
-    @GetMapping("/{id}")
-    public String showUserById(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("index", usersServices.getUserById(id));
-        return "index";
+        model.addAttribute("userAuth", usersServices.loadUserByUsername(principal.getName()));
+        model.addAttribute("listRoles", usersServices.getAllRoles());
+        return "admin";
     }
 
     @GetMapping("/new")
@@ -45,17 +44,17 @@ public class AdminController {
     @GetMapping("/{id}/edit")
     public String editUsers(Model model, @PathVariable("id") Long id) {
         model.addAttribute("user", usersServices.getUserById(id));
-        return "edit";
+        return "admin";
     }
 
-    @PatchMapping("/{id}")
-    public String updateUsers(@ModelAttribute("user") User user, @PathVariable("id") int id) {
+    @PutMapping("/{id}")
+    public String updateUser(@ModelAttribute("user") User user) {
         usersServices.updateUser(user);
         return "redirect:/admins";
     }
-
-    @DeleteMapping("/{id}/delete")
-    public String deleteUsers(@PathVariable("id") Long id) {
+    @DeleteMapping("/delete/{id}")
+    public String deleteUser(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("user", usersServices.getUserById(id));
         usersServices.removeUser(id);
         return "redirect:/admins";
     }

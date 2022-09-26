@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Title</title>
+</head>
+<body>
+<nav class="navbar bg-dark">
+    <div class="container-fluid text-white" th:each="admin : ${users}">
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+            <a class="navbar-brand" th:text="${admin.getUsername()}+' with roles: ADMIN USER'"></a>
+        </div>
+        <div sec:authorize="hasRole('ROLE_USER')">
+            <a class="navbar-brand" th:text="${admin.getUsername()}+'with roles: USER'"></a>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <button class="btn btn-outline-success d-flex" type="submit">Logout</button>
+        </form>
+    </div>
+</nav>
+<div class="row">
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-white col-3" style="height: 100%">
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li sec:authorize="hasRole('ROLE_ADMIN')">
+                <a href="/admins" class="nav-link">
+                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+                    Admin
+                </a>
+            </li>
+            <li>
+                <a href="/users" class="nav-link active">
+                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+                    User
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="d-flex flex-column flex-shrink-0 p-3 col">
+        <h1 class="">User panel</h1>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="user.html">Users table</a>
+            </li>
+        </ul>
+        <div class="d-flex flex-column flex-shrink-0 p-3 border">
+            <table class="table table-striped">
+                <thead>
+                </tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="users : ${users}">
+                    <th th:text="${users.getId()}" scope="col">1</th>
+                    <th th:text="${users.getUsername()}" scope="col"></th>
+                    <th th:text="${users.getRolesInfo()}" scope="col"></th>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+
+</body>
+
+<!--<form th:method="POST" th:action="@{/admins}" th:object="${user}">
+  <label for="name"> Enter name:</label>
+  <input type="text" th:field="*{username}" id="name"/>
+  <label for="passw"> Enter password:</label>
+  <input type="text" th:field="*{password}" id="passw"/>
+
+  <br/>
+
+  <input type="submit" value="Create"/>
+</form>-->
+
+</html>
