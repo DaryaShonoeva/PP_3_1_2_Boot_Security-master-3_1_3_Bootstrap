@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
@@ -10,15 +11,15 @@ import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import javax.transaction.Transactional;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    public BCryptPasswordEncoder passwordEncoder;
+
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
@@ -29,9 +30,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void addUser(User user) {
-        Set<Role> role = new LinkedHashSet<>();
-        role.add(roleRepository.findAll().get(0));
-        user.setRole(role);
+        //user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
@@ -44,6 +43,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
+    }
+    @Override
+    public Set<Role> findRolesByName(String roleName) {
+        Set<Role> roles = new HashSet<>();
+        for (Role role : getAllRoles()) {
+            if (roleName.contains(role.getRole())) {
+                roles.add(role);
+            }
+        }
+        return roles;
     }
 
     @Override

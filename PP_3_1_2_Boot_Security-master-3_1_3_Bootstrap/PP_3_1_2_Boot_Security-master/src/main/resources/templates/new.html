@@ -53,7 +53,7 @@
     </nav>
     <div class="d-flex flex-column flex-shrink-0 p-3 border">
       <div class="d-flex flex-column flex-shrink-0 p-3 text-center">
-        <form th:method="POST" th:action="@{/admins}" th:object="${user}">
+        <form th:method="POST" th:action="@{/admins/create}" th:object="${user}">
           <div class="mb-3 ">
             <label for="exampleInputEmail1" class="form-label fw-bolder">Username</label>
             <input type="text" th:field="*{username}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
@@ -64,10 +64,11 @@
             <input type="password" th:field="*{password}" class="form-control" id="exampleInputPassword1">
           </div>
           <div class="mb-3">
-            <label for="exampleInputRole" class="form-label fw-bolder">Role</label>
-            <select class="form-select" multiple id="exampleInputRole" aria-label="multiple select example">
-              <option value="ROLE_ADMIN">ADMIN</option>
-              <option value="ROLE_USER">USER</option>
+            <label for="role">Role</label>
+            <select multiple="multiple" th:field="*{role}"
+                    type="text" id="role">
+              <option th:each="role : ${listRoles}" th:value="${role.getId()}" th:text="${role.getRole()}"></option>
+
             </select>
           </div>
           <button type="submit" class="btn btn-success">Add new user</button>

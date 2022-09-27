@@ -16,6 +16,7 @@ public interface UserService extends UserDetailsService {
     void addRole(Role role);
 
     List<Role> getAllRoles();
+    Set<Role> findRolesByName(String roleName);
 
     void updateUser(User user);
 
