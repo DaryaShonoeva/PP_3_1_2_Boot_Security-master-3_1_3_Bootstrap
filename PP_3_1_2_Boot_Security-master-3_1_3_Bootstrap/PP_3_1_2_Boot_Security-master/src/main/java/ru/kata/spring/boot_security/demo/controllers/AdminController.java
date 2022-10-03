@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.UserService;
@@ -26,9 +27,16 @@ public class AdminController {
         return usersServices.listUser();
     }
 
+    @GetMapping("/reg")
+    public User showRegistrationUser(Principal principal, Model model) {
+        return (User) usersServices.loadUserByUsername(principal.getName());
+    }
+
     @GetMapping("/api/{id}")
     public User getUserById(@PathVariable("id") Long id) {
-        return usersServices.getUserById(id);
+
+        User user = usersServices.getUserById(id);
+        return user;
     }
 
     @PostMapping("/admins/api/new")
