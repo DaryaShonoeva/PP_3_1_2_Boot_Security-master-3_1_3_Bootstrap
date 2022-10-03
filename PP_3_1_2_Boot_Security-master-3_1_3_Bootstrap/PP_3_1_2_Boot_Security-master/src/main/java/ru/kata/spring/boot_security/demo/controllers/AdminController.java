@@ -11,7 +11,6 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
 public class AdminController {
     private final UserService usersServices;
 
@@ -21,18 +20,18 @@ public class AdminController {
         this.usersServices = usersServices;
     }
 
-    @GetMapping()
+    @GetMapping("/api")
     public List<User> getAllUsers() {
 
         return usersServices.listUser();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/{id}")
     public User getUserById(@PathVariable("id") Long id) {
         return usersServices.getUserById(id);
     }
 
-    @PostMapping("/new")
+    @PostMapping("/admins/api/new")
     public ResponseEntity<HttpStatus> createNewUser(@RequestBody User user) {
         usersServices.addUser(user);
         return ResponseEntity.ok(HttpStatus.OK);

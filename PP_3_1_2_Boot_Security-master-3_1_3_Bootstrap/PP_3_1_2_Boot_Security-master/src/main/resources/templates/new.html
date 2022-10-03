@@ -89,7 +89,7 @@
 <script>
     async function createUser(userName, userRole, password) {
 
-        const response = await fetch("/api/new", {
+        const response = await fetch("api/new", {
             method: "POST",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -98,9 +98,9 @@
                 role: userRole
             })
         }).then(() => {
-            //form.reset();
+            form.reset();
             getUsers();
-            //document.getElementById("allUsers").click();
+            document.getElementById("allUsers").click();
         })
     }
     const form = document.forms["formNewUser"];
@@ -119,7 +119,7 @@
         createUser(name, newUserRole,password);
     });
     async function getUsers()  {
-        const response = await fetch("/api/new", {
+        const response = await fetch("/api", {
             method: "GET",
             headers: {"Accept": "application/json"}
         });
