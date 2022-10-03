@@ -25,7 +25,7 @@
     <div class="d-flex flex-column flex-shrink-0 p-3 text-white col-3" style="height: 100%">
         <ul class="nav nav-pills flex-column mb-auto">
             <li sec:authorize="hasRole('ROLE_ADMIN')">
-                <a href="/admins" class="nav-link">
+                <a href="/admins/all" class="nav-link">
                     <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
                     Admin
                 </a>
@@ -48,18 +48,13 @@
         <div class="d-flex flex-column flex-shrink-0 p-3 border">
             <table class="table table-striped">
                 <thead>
-                </tr>
+                <tr>
                     <th scope="col">ID</th>
                     <th scope="col">Username</th>
                     <th scope="col">Role</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="users : ${users}">
-                    <th th:text="${users.getId()}" scope="col">1</th>
-                    <th th:text="${users.getUsername()}" scope="col"></th>
-                    <th th:text="${users.getRolesInfo()}" scope="col"></th>
-                </tr>
                 </tbody>
             </table>
 
@@ -71,6 +66,45 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 
+
+<script>
+    async function getUsers()  {
+        const response = await fetch("/users", {
+            method: "GET",
+            headers: {"Accept": "application/json"}
+        });
+        if(response.ok === true) {
+            const user = await response.json();
+            let rows = document.querySelector("tbody");
+            rows.append(row(user));
+        }
+    }
+
+    function row(user) {
+
+        const tr = document.createElement("tr");
+        tr.setAttribute("data-rowid", user.id);
+
+        const idTd = document.createElement("td");
+        idTd.append(user.id);
+        tr.append(idTd);
+
+        const nameTd = document.createElement("td");
+        nameTd.append(user.username);
+        tr.append(nameTd);
+
+        const roleTd = document.createElement("td");
+        let userRoles = "";
+        user.role.forEach(role=> {
+            userRoles = userRoles + role.role.split("_")[1] + " ";
+        })
+        roleTd.append(userRoles);
+        tr.append(roleTd);
+
+        return tr;
+    }
+    window.onload = getUsers;
+</script>
 </body>
 
 <!--<form th:method="POST" th:action="@{/admins}" th:object="${user}">

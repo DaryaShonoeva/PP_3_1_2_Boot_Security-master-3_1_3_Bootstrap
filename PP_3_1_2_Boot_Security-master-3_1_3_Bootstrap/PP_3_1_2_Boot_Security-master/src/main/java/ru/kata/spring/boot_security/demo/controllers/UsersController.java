@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import java.security.Principal;
 
-@Controller
+@RestController
+@CrossOrigin
 @RequestMapping("/users")
 public class UsersController {
 
@@ -21,12 +23,16 @@ public class UsersController {
     }
 
 
-    @GetMapping("")
+    @GetMapping()
+    public User showUserById(Principal principal) {
+        return (User) usersServices.loadUserByUsername(principal.getName());
+    }
+   /* @GetMapping("")
     public String showUserById(Principal principal, Model model) {
 
         model.addAttribute("users", usersServices.loadUserByUsername(principal.getName()));
         return "user";
-    }
+    }*/
 
 }
 

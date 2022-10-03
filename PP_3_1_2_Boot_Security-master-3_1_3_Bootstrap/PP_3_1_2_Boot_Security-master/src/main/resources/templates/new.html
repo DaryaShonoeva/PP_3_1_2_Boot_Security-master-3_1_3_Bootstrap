@@ -40,7 +40,7 @@
     <h1 class="">Admin panel</h1>
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <a class="nav-link" aria-current="page" href="/admins">Users table</a>
+        <a class="nav-link" aria-current="page" id="allUsers" href="/admins/all">Users table</a>
       </li>
       <li class="nav-item">
         <a class="nav-link active" href="new.html">New User</a>
@@ -53,25 +53,25 @@
     </nav>
     <div class="d-flex flex-column flex-shrink-0 p-3 border">
       <div class="d-flex flex-column flex-shrink-0 p-3 text-center">
-        <form th:method="POST" th:action="@{/admins/create}" th:object="${user}">
+        <form name="formNewUser" id="formNewUser">
           <div class="mb-3 ">
-            <label for="exampleInputEmail1" class="form-label fw-bolder">Username</label>
-            <input type="text" th:field="*{username}" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <label for="username" class="form-label fw-bolder">Username</label>
+            <input type="text" name="username" class="form-control" id="username" aria-describedby="emailHelp">
             <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
           </div>
           <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label fw-bolder">Password</label>
-            <input type="password" th:field="*{password}" class="form-control" id="exampleInputPassword1">
+            <label for="password" class="form-label fw-bolder">Password</label>
+            <input type="password" name="password" class="form-control" id="password">
           </div>
           <div class="mb-3">
-            <label for="role">Role</label>
-            <select multiple="multiple" th:field="*{role}"
-                    type="text" id="role">
-              <option th:each="role : ${listRoles}" th:value="${role.getId()}" th:text="${role.getRole()}"></option>
-
+            <label for="newUserRoles">Role</label>
+            <select id="newUserRoles" class="form-control" name="newUserRoles"
+                    multiple size="2">
+              <option id="0" value="1" name="ROLE_USER">USER</option>
+              <option id="1" value="2" name="ROLE_ADMIN">ADMIN</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-success">Add new user</button>
+          <button type="submit" id="addNewUser" class="btn btn-success">Add new user</button>
         </form>
       </div>
 
@@ -85,6 +85,86 @@
 <!-- JavaScript Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 
+<!-- Custom JavaScript -->
+<script>
+  async function createUser(userName, userRole, password) {
+
+    const response = await fetch("admins/new", {
+      method: "POST",
+      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: userName,
+        password: password,
+        role: userRole
+      })
+    }).then(() => {
+      form.reset();
+      getUsers();
+      document.getElementById("allUsers").click();
+    })
+  }
+  const form = document.forms["formNewUser"];
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    let newUserRole = [];
+    for (let i = 0; i < form.newUserRoles.options.length; i++) {
+      if(form.newUserRoles.options[i].selected) newUserRole.push({
+        id: form.newUserRoles.options[i].value,
+        role: form.newUserRoles.options[i].name
+      })
+
+    }
+    const name = form.elements["username"].value;
+    const password = form.elements["password"].value;
+    createUser(name, newUserRole,password);
+  });
+  async function getUsers()  {
+    const response = await fetch("/admins", {
+      method: "GET",
+      headers: {"Accept": "application/json"}
+    });
+    if(response.ok === true) {
+      const users = await response.json();
+      let rows = document.querySelector("tbody");
+      users.forEach(user => {
+        rows.append(row(user));
+      })
+    }
+  }
+
+  function row(user) {
+
+    const tr = document.createElement("tr");
+    tr.setAttribute("data-rowid", user.id);
+
+    const idTd = document.createElement("td");
+    idTd.append(user.id);
+    tr.append(idTd);
+
+    const nameTd = document.createElement("td");
+    nameTd.append(user.username);
+    tr.append(nameTd);
+
+    const roleTd = document.createElement("td");
+    let userRoles = "";
+    user.role.forEach(role=> {
+      userRoles = userRoles + role.role.split("_")[1] + " ";
+    })
+    roleTd.append(userRoles);
+    tr.append(roleTd);
+
+    const idTd1 = document.createElement("td");
+    idTd1.append(" ");
+    tr.append(idTd1);
+
+    const idTd2 = document.createElement("td");
+    idTd2.append(" ");
+    tr.append(idTd2);
+
+    return tr;
+  }
+
+</script>
 </body>
 
 <!--<form th:method="POST" th:action="@{/admins}" th:object="${user}">
