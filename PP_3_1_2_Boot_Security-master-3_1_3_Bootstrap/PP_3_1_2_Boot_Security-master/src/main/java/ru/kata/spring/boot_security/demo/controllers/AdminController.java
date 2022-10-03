@@ -9,9 +9,10 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import java.security.Principal;
+import java.util.List;
 
-@Controller
-@RequestMapping("/admins")
+@RestController
+@RequestMapping("/api")
 public class AdminController {
     private final UserService usersServices;
 
@@ -22,6 +23,11 @@ public class AdminController {
     }
 
     @GetMapping()
+    public List<User> getAllUsers() {
+        return usersServices.listUser();
+    }
+
+    /*@GetMapping()
     public String showAllUsers(Principal principal, Model model) {
         model.addAttribute("users", usersServices.listUser());
         model.addAttribute("userAuth", usersServices.loadUserByUsername(principal.getName()));
@@ -47,11 +53,11 @@ public class AdminController {
         model.addAttribute("listRoles", usersServices.getAllRoles());
         return "admin";
     }
-    /*@PatchMapping("/edit/{id}")
+    *//*@PatchMapping("/edit/{id}")
     public String updateUser(@ModelAttribute("user") User user, @PathVariable("id") int id) {
         userService.changeUser(id, user);
         return "redirect:/admin";
-    }*/
+    }*//*
     @PatchMapping("/edit")
     public String updateUser(@ModelAttribute("user") User user) {
         usersServices.updateUser(user);
@@ -62,5 +68,5 @@ public class AdminController {
         model.addAttribute("user", usersServices.getUserById(id));
         usersServices.removeUser(id);
         return "redirect:/admins";
-    }
+    }*/
 }
