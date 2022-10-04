@@ -44,6 +44,12 @@ public class AdminController {
         usersServices.addUser(user);
         return ResponseEntity.ok(HttpStatus.OK);
     }
+
+    @PatchMapping("/api/update")
+    public ResponseEntity<HttpStatus> updateNewUser(@RequestBody User user) {
+        usersServices.updateUser(user);
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
     /*@GetMapping()
     public String showAllUsers(Principal principal, Model model) {
         model.addAttribute("users", usersServices.listUser());

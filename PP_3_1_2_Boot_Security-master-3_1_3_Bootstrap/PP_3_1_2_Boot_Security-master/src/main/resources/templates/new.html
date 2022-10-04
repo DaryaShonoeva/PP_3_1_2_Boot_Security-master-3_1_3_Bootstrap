@@ -118,6 +118,7 @@
         const password = form.elements["password"].value;
         createUser(name, newUserRole,password);
     });
+
     async function getUsers()  {
         const response = await fetch("/api", {
             method: "GET",
