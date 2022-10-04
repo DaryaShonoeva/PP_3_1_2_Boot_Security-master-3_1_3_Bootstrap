@@ -50,6 +50,12 @@ public class AdminController {
         usersServices.updateUser(user);
         return ResponseEntity.ok(HttpStatus.OK);
     }
+
+    @DeleteMapping ("/api/{id}")
+    public ResponseEntity<HttpStatus> deleteUserById(@PathVariable("id") Long id) {
+        usersServices.removeUser(id);
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
     /*@GetMapping()
     public String showAllUsers(Principal principal, Model model) {
         model.addAttribute("users", usersServices.listUser());
