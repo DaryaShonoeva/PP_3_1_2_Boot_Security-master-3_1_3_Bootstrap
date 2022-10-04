@@ -9,13 +9,9 @@
 </head>
 <body>
 <nav class="navbar bg-dark">
-    <div class="container-fluid text-white" th:each="admin : ${userAuth}">
-        <div sec:authorize="hasRole('ROLE_ADMIN')">
-            <a class="navbar-brand" th:text="${admin.getUsername()}+'with roles: ADMIN USER'"></a>
-        </div>
-        <div sec:authorize="hasRole('ROLE_USER')">
-            <a class="navbar-brand" th:text="${admin.getUsername()}+'with roles: USER'"></a>
-        </div>
+    <div class="container-fluid text-white">
+        <a class="navbar-brand" id="navBarRole"></a>
+
         <form th:action="@{/logout}" method="post">
             <button class="btn btn-outline-success d-flex" type="submit">Logout</button>
         </form>
@@ -25,13 +21,13 @@
     <div class="d-flex flex-column flex-shrink-0 p-3 text-white col-3" style="height: 100%">
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item">
-                <a href="/admins" class="nav-link active" aria-current="page">
+                <a href="/admins/all" class="nav-link active" aria-current="page">
                     <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
                     Admin
                 </a>
             </li>
             <li>
-                <a href="/users" class="nav-link text-blue">
+                <a href="/users/all" class="nav-link text-blue">
                     <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
                     User
                 </a>
@@ -332,6 +328,26 @@
         });
 
         return await response.json();
+    }
+
+    async function roleNavBar() {
+        const response = await fetch("/api", {
+            method: "GET",
+            headers: {"Accept": "application/json"}
+        });
+        // если запрос прошел нормально
+        if (response.ok === true) {
+            // получаем данные
+            const users = await response.json();
+            let userRoles = "";
+            users.role.forEach((role) => {
+                userRoles = userRoles + role.role.split("_")[1]+" ";
+            })
+            let a = document.getElementById("navBarRole");
+            a.append(users.username + " with roles " + userRoles);
+
+        }
+
     }
     window.onload=getUsers;
 </script>
