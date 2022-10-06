@@ -8,7 +8,7 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 
 import java.security.Principal;
 
-@Controller
+@RestController
 @RequestMapping("/users")
 public class UsersController {
 

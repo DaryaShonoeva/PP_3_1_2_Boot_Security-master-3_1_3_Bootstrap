@@ -27,7 +27,7 @@ public class AdminController {
         return usersServices.listUser();
     }
 
-    @GetMapping("/reg")
+    @GetMapping("/api/reg")
     public User showRegistrationUser(Principal principal, Model model) {
         return (User) usersServices.loadUserByUsername(principal.getName());
     }

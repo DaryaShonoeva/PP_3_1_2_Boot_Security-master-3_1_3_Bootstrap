@@ -330,7 +330,7 @@
         return await response.json();
     }
 
-    async function roleNavBar() {
+    /*async function roleNavBar() {
         const response = await fetch("/api", {
             method: "GET",
             headers: {"Accept": "application/json"}
@@ -340,15 +340,15 @@
             // получаем данные
             const users = await response.json();
             let userRoles = "";
-            users.role.forEach((role) => {
+            /!*users.role.forEach((role) => {
                 userRoles = userRoles + role.role.split("_")[1]+" ";
-            })
+            })*!/
             let a = document.getElementById("navBarRole");
             a.append(users.username + " with roles " + userRoles);
 
         }
 
-    }
+    }*/
     window.onload=getUsers;
 </script>
 
