@@ -9,13 +9,9 @@
 </head>
 <body>
 <nav class="navbar bg-dark">
-    <div class="container-fluid text-white" th:each="admin : ${users}">
-        <div sec:authorize="hasRole('ROLE_ADMIN')">
-            <a class="navbar-brand" th:text="${admin.getUsername()}+' with roles: ADMIN USER'"></a>
-        </div>
-        <div sec:authorize="hasRole('ROLE_USER')">
-            <a class="navbar-brand" th:text="${admin.getUsername()}+'with roles: USER'"></a>
-        </div>
+    <div class="container-fluid text-white">
+        <a class="navbar-brand" id="navBarRole"></a>
+
         <form th:action="@{/logout}" method="post">
             <button class="btn btn-outline-success d-flex" type="submit">Logout</button>
         </form>
@@ -103,6 +99,26 @@
 
         return tr;
     }
+    async function roleNavBar() {
+        const responseReg = await fetch("/api/reg", {
+            method: "GET",
+            headers: {"Accept": "application/json"}
+        });
+        // если запрос прошел нормально
+        if (responseReg.ok === true) {
+            // получаем данные
+            const usersReg = await responseReg.json();
+
+            let userRoles = "";
+            usersReg.role.forEach((role) => {
+                userRoles = userRoles + role.role.split("_")[1]+" ";
+            })
+
+            let a = document.getElementById("navBarRole");
+            a.append(usersReg.username + " with roles " + userRoles);
+        }
+    }
+    roleNavBar();
     window.onload = getUsers;
 </script>
 </body>

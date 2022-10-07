@@ -60,7 +60,7 @@
                     <th scope="col">Delete</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="usersTable">
                 </tbody>
             </table>
 
@@ -74,7 +74,7 @@
      aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form id="formEditUser">
+            <form id="formEditUser" name="formEditUser">
                         <div class="">
                             <div class="form-group">
                                 <label for="idEdit" class="col-form-label font-weight-bold">ID</label>
@@ -113,7 +113,7 @@
      aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form id="formDeleteUser">
+            <form id="formDeleteUser" name="formDeleteUser">
                 <div class="">
                     <div class="form-group">
                         <label for="idEdit" class="col-form-label font-weight-bold">ID</label>
@@ -157,6 +157,7 @@
             // получаем данные
             const users = await response.json();
             let rows = document.querySelector("tbody");
+            rows.innerHTML = "";
             users.forEach(user => {
                 // добавляем полученные элементы в таблицу
                 rows.append(row(user));
@@ -178,47 +179,45 @@
         form.username.value = user.username;
         form.password.value = user.password;
 
-        // $('#rolesEditUser').empty();
+        //$('#rolesEditUser').empty();
 
 
     }
 
     //edit form save
 
-    $(async function() {
-        editUser();
-
-    });
-    function editUser() {
-        const editForm = document.forms["formEditUser"];
-        editForm.addEventListener("submit", ev => {
-            ev.preventDefault();
-            let newUserRole = [];
-            for (let i = 0; i < form.newUserRoles.options.length; i++) {
-                if(form.newUserRoles.options[i].selected) newUserRole.push({
-                    id: form.newUserRoles.options[i].value,
-                    role: form.newUserRoles.options[i].name
-                })
-            }
-
-
-            fetch("/api/update", {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: editForm.username,
-                    password: editForm.password,
-                    role: newUserRole
-                })
-            }).then(() => {
-                //$('#editFormCloseButton').click();
-                getUsers();
+    const editForm = document.forms["formEditUser"];
+    editForm.addEventListener("submit", ev => {
+        ev.preventDefault();
+        let newUserRole = [];
+        for (let i = 0; i < editForm.newUserRoles.options.length; i++) {
+            if(editForm.newUserRoles.options[i].selected) newUserRole.push({
+                id: editForm.newUserRoles.options[i].value,
+                role: "ROLE_" + editForm.newUserRoles.options[i].text
             })
+
+        }
+
+
+        fetch("/api/update", {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: editForm.id.value,
+                username: editForm.username.value,
+                password: editForm.password.value,
+                role: newUserRole
+            })
+        }).then(() => {
+            document.getElementById("editFormCloseButton").click();
+            //document.getElementById("usersTable").innerHTML = "";
+            getUsers();
         })
-    }
-<!-- Delete user -->
+    })
+
+//delete users
 
     $('#delete').on('show.bs.modal', ev => {
         let button = $(ev.relatedTarget);
@@ -232,29 +231,24 @@
         form.id.value = user.id;
         form.username.value = user.username;
     }
-
-    $(async function() {
-
-        deleteUser();
-    });
-    function deleteUser(){
-        const deleteForm = document.forms["formDeleteUser"];
-        deleteForm.addEventListener("submit", ev => {
-            ev.preventDefault();
-            fetch("http://localhost:8080/api/" + deleteForm.id.value, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(() => {
-                    $('#deleteFormCloseButton').click();
-                    getUsers();
-                })
+    const deleteForm = document.forms["formDeleteUser"];
+    deleteForm.addEventListener("submit", ev => {
+        ev.preventDefault();
+        fetch("http://localhost:8080/api/" + deleteForm.id.value, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+            document.getElementById("deleteFormCloseButton").click();
+            //document.getElementById("usersTable").innerHTML = "";
+            getUsers();
         })
-    }
+    })
+
 
     function row(user) {
+
 
         const tr = document.createElement("tr");
         tr.setAttribute("data-rowid", user.id);
@@ -330,26 +324,27 @@
         return await response.json();
     }
 
-    /*async function roleNavBar() {
-        const response = await fetch("/api", {
+    async function roleNavBar() {
+        const responseReg = await fetch("/api/reg", {
             method: "GET",
             headers: {"Accept": "application/json"}
         });
         // если запрос прошел нормально
-        if (response.ok === true) {
+        if (responseReg.ok === true) {
             // получаем данные
-            const users = await response.json();
+            const usersReg = await responseReg.json();
+
             let userRoles = "";
-            /!*users.role.forEach((role) => {
+            usersReg.role.forEach((role) => {
                 userRoles = userRoles + role.role.split("_")[1]+" ";
-            })*!/
+            })
+
             let a = document.getElementById("navBarRole");
-            a.append(users.username + " with roles " + userRoles);
-
+            a.append(usersReg.username + " with roles " + userRoles);
         }
-
-    }*/
+    }
     window.onload=getUsers;
+    roleNavBar();
 </script>
 
 </body>
